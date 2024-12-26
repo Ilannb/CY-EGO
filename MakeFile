@@ -1,0 +1,28 @@
+# Variables
+CC = gcc                          # Compilateur
+CFLAGS = -Wall -Wextra -std=c99   # Options de compilation
+TARGET = program                  # Nom de l'exécutable final
+
+# Fichiers source et objets
+SRCS = main.c avl.c treat_csv.c   # Fichiers source
+OBJS = $(SRCS:.c=.o)              # Transformation des fichiers source en objets
+
+# Compilation par défaut
+all: $(TARGET)
+
+# Création de l'exécutable
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) -o $(TARGET)
+
+# Règle générique pour compiler chaque fichier source en fichier objet
+%.o: %.c projet.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Nettoyage des fichiers générés
+clean:
+	rm -f $(OBJS) $(TARGET)
+
+# Exécution du programme
+run: $(TARGET)
+	./$(TARGET)
+
