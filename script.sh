@@ -112,20 +112,25 @@ elif [ [ $station == "hva" ] || [ $station == "hvb" ] ] && [ [ $conso == "all" ]
     exit 1
 fi
 
+#Verif ID centrale
 
+if [ -z $4 ];then
+IDC=$4
+if[ $IDC -le 0 ] || [ $IDC -gt 5];then
 
+echo "L'ID de la centrale doit être entre 1 et 5"
+afficher_aide
+exit 1
 
+else
+    IDC=0
+fi
 
+#Verif executable
 
-
- 
- 
-
-
-fichier=$1
-station=$2
-conso=$3
-
+if [ ! -x exe ];then
+    make clean -s -C CodeC
+    make -s -C CodeC
 
 
 

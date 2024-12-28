@@ -1,7 +1,7 @@
 # Variables
 CC = gcc                          # Compilateur
 CFLAGS = -Wall -Wextra -std=c99   # Options de compilation
-TARGET = program                  # Nom de l'exécutable final
+TARGET = exe                # Nom de l'exécutable final
 
 # Fichiers source et objets
 SRCS = main.c avl.c treat_csv.c   # Fichiers source
