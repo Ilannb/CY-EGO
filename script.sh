@@ -131,6 +131,70 @@ fi
 if [ ! -x exe ];then
     make clean -s -C CodeC
     make -s -C CodeC
+fi
+
+#Verif dossier tmp et graph
+
+if [ -d tmp ]; then 
+    rm -rf tmp
+fi
+
+mkdir tmp
+
+if [ !-d graphs ];then
+    mkdir graphs
+fi
+
+#Time
+start_timer=$(date +%s)
+
+#CREATION DU FICHIER FILTRE
+
+fichier_filtre=tmp/$2_$3.csv
+fichier_filtre2=tmp/$2_$3_$4.csv
 
 
+#Hvb comp
+if [ $station == "hvb" ];then
+    if [ $IDC == 0 ];then
+ tail -n +2 $csv | awk -F ';' '$2 != '-' && $3 == '-' && $4 == '-' {print $0}' $csv > $fichier_filtre
+
+    else
+ touch $fichier_filtre2
+fi
+ tail -n +2 $csv | awk -F ';' '$1 == $IDC && $2 != '-' && $3 == '-' && $4 == '-' {print $0}' $csv > $fichier_filtre2
+fi
+
+#Hva comp
+if [ $station == "hva" ];then
+    if [ $IDC == 0 ];then
+ tail -n +2 $csv | awk -F ';' '$3 != '-' && $4 == '-' print $0}' $csv > $fichier_filtre
+else
+    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $3 != '-' && $4 == '-' print $0}' $csv > $fichier_filtre2
+fi
+
+if [ $station == "lv" ]; then
+    if [ $IDC == 0 ]; then
+    
+    if [ $conso == "comp" ]; then
+    tail -n +2 $csv | awk -F ';' '$4 != '-' && $5 != '-' {print 0}' $csv > $fichier_filtre
+    
+    elif [ $conso == "indiv" ]; then
+    tail -n +2 $csv | awk -F ';' '$4 != '-' && $6 != '-' {print 0}' $csv > $fichier_filtre
+    
+    elif [ $conso == "all" ]; then
+    tail -n +2 $csv | awk -F ';' '$4 != '-' {print 0}' $csv > $fichier_filtre
+    fi
+ else 
+     if [ $conso == "comp" ]; then
+    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $4 != '-' && $5 != '-' {print 0}' $csv > $fichier_filtre2
+    
+    elif [ $conso == "indiv" ]; then
+    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $4 != '-' && $6 != '-' {print 0}' $csv > $fichier_filtre2
+    
+    elif [ $conso == "all" ]; then
+    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $4 != '-' {print 0}' $csv > $fichier_filtre2
+    fi
+fi
+fi
 
