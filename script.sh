@@ -45,8 +45,8 @@ if [ $# -eq 0 ]; then
 fi
 
 #option aide si demandé
-for agr in $@; do
-if [ $arg -eq "-h" ]; then
+for arg in $@; do
+if [ $arg == "-h" ]; then
     afficher_aide
     exit 0
 fi
@@ -56,7 +56,7 @@ done
 
 
 
-if[ !-z $1 ]; then 
+if [ -z $1 ]; then 
     echo "Veuillez entrer le fichier csv"
     afficher_aide
     exit 1
@@ -64,13 +64,13 @@ fi
 
 csv=$1
 
-if [ !-f $csv ]; then 
+if [ ! -f $csv ]; then 
     echo "Veuillez entrer un fichier"
     afficher_aide
     exit 1
 fi
 
-if [ !-r $csv ]; then 
+if [ ! -r $csv ]; then 
     echo "Le fichier doit pouvoir être lu"
     afficher_aide
     exit 1
@@ -78,7 +78,7 @@ fi
 
 #verif type de station
 
-if [ !-z $2 ]; then 
+if [ -z $2 ]; then 
     echo "Veuillez entrer le type de station"
     afficher_aide
     exit 1
@@ -86,7 +86,7 @@ fi
 
 station=$2
 
-if [ $station -ne "hva" ] && [ $station -ne "hvb" ] && [ $station -ne "lv" ]; then 
+if [ $station != "hva" ] && [ $station != "hvb" ] && [ $station != "lv" ]; then 
     echo "Veuillez entrer un type de station valide"
     afficher_aide
     exit 1
@@ -94,7 +94,7 @@ fi
 
 #verif type de consommateur
 
-if [ !-z $3 ]; then 
+if [  -z $3 ]; then 
     echo "Veuillez entrer le type de consommateur"
     afficher_aide
     exit 1
@@ -106,7 +106,7 @@ if [ $conso != "comp" ] && [ $conso != "indiv" ] && [ $conso != "all" ]; then
     echo "Veuillez entrer un type de consommateur valide"
     afficher_aide
     exit 1
-elif [ [ $station == "hva" ] || [ $station == "hvb" ] ] && [ [ $conso == "all" ] || [ $conso == "indiv"] ]; then
+elif [[ ( $station == "hva"  ||  $station == "hvb" )  &&  ( $conso == "all"  ||  $conso == "indiv" ) ]]; then
     echo "Type de consommateur invalide pour ce type de station"
     afficher_aide
     exit 1
@@ -114,9 +114,9 @@ fi
 
 #Verif ID centrale
 
-if [ -z $4 ];then
+if [ ! -z $4 ];then
 IDC=$4
-if[ $IDC -le 0 ] || [ $IDC -gt 5];then
+if [ $IDC -le 0 ] || [ $IDC -gt 5 ];then
 
 echo "L'ID de la centrale doit être entre 1 et 5"
 afficher_aide
@@ -125,7 +125,7 @@ exit 1
 else
     IDC=0
 fi
-
+fi
 #Verif executable
 
 if [ ! -x exe ];then
@@ -141,7 +141,7 @@ fi
 
 mkdir tmp
 
-if [ !-d graphs ];then
+if [ ! -d graphs ];then
     mkdir graphs
 fi
 
@@ -156,45 +156,44 @@ fichier_filtre2=tmp/$2_$3_$4.csv
 
 #Hvb comp
 if [ $station == "hvb" ];then
-    if [ $IDC == 0 ];then
+    if [ $IDC -eq 0 ];then
  tail -n +2 $csv | awk -F ';' '$2 != '-' && $3 == '-' && $4 == '-' {print $0}' $csv > $fichier_filtre
-
     else
- touch $fichier_filtre2
-fi
+
  tail -n +2 $csv | awk -F ';' '$1 == $IDC && $2 != '-' && $3 == '-' && $4 == '-' {print $0}' $csv > $fichier_filtre2
 fi
-
+fi
 #Hva comp
 if [ $station == "hva" ];then
-    if [ $IDC == 0 ];then
- tail -n +2 $csv | awk -F ';' '$3 != '-' && $4 == '-' print $0}' $csv > $fichier_filtre
+    if [ $IDC -eq 0 ];then
+ tail -n +2 $csv | awk -F ';' '$3 != '-' && $4 == '-' {print $0}' $csv > $fichier_filtre
 else
-    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $3 != '-' && $4 == '-' print $0}' $csv > $fichier_filtre2
+    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $3 != '-' && $4 == '-' {print $0}' $csv > $fichier_filtre2
+    fi
 fi
-
 if [ $station == "lv" ]; then
     if [ $IDC == 0 ]; then
     
     if [ $conso == "comp" ]; then
-    tail -n +2 $csv | awk -F ';' '$4 != '-' && $5 != '-' {print 0}' $csv > $fichier_filtre
+    tail -n +2 $csv | awk -F ';' '$4 != '-' && $5 != '-' {print $0}' $csv > $fichier_filtre
     
     elif [ $conso == "indiv" ]; then
-    tail -n +2 $csv | awk -F ';' '$4 != '-' && $6 != '-' {print 0}' $csv > $fichier_filtre
+    tail -n +2 $csv | awk -F ';' '$4 != '-' && $6 != '-' {print $0}' $csv > $fichier_filtre
     
     elif [ $conso == "all" ]; then
     tail -n +2 $csv | awk -F ';' '$4 != '-' {print 0}' $csv > $fichier_filtre
     fi
  else 
      if [ $conso == "comp" ]; then
-    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $4 != '-' && $5 != '-' {print 0}' $csv > $fichier_filtre2
+    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $4 != '-' && $5 != '-' {print $0}' $csv > $fichier_filtre2
     
     elif [ $conso == "indiv" ]; then
-    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $4 != '-' && $6 != '-' {print 0}' $csv > $fichier_filtre2
+    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $4 != '-' && $6 != '-' {print $0}' $csv > $fichier_filtre2
     
     elif [ $conso == "all" ]; then
-    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $4 != '-' {print 0}' $csv > $fichier_filtre2
+    tail -n +2 $csv | awk -F ';' '$1 == $IDC && $4 != '-' {print $0}' $csv > $fichier_filtre2
+        fi
     fi
 fi
-fi
+
 
